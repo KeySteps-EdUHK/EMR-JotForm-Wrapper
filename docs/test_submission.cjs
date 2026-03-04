@@ -40,8 +40,9 @@ const API_KEY  = env.VITE_JOTFORM_API_KEY
 // imageLabel helper (same logic as App.jsx)
 const imageLabel = (sel, correct) => (!sel || sel === 'N/A') ? '9999' : (correct ? 'A' : 'B')
 const val        = (v)            => (v && v !== 'N/A')      ? v       : '9999'
-const arr        = (a)            => a?.length               ? [...a]  : ['9999']
+const arr        = (a)            => a?.length               ? [...a]  : []
 // NOTE: arr() returns an Array — buildPayload handles it with submission[qid][i] notation
+// Empty arrays are skipped by buildPayload (no field sent = leave blank in JotForm)
 
 // Simulate a completely filled-in form for student St10001 / class C-001-01
 const answers = {
@@ -53,7 +54,7 @@ const answers = {
   '58':  'Test Student',               // studentName
   '186': 'Test School',                // schoolName
   '201': 'C-001-01',                   // studentClass
-  '213': 'Kowloon City',               // district
+  '213': '九龍城',                     // district (must match JotForm dropdown option exactly)
 
   // ── Feelings Q1–Q6 (qids from FEELINGS_QUESTIONS) ────────────────────────
   // Q1a–Q4a: control_radio  → plain string
@@ -76,12 +77,32 @@ const answers = {
   '187': val('2'),                     // Q7 textbox
   '127': val('玩過積木同扮演遊戲'),     // Q8 textarea
 
-  // ── Image blocks (set 1 only — sets 2–8 have null qids, skipped) ──────────
-  // Correct image selected for batch1 and batch4; wrong for batch2; N/A for batch3
+  // ── Image blocks (sets 1 + 2 only — sets 3–8 have null qids, skipped) ─────
+  // Set 1: correct for batch1+batch4, wrong for batch2, N/A for batch3
   '35':  imageLabel('KC-01_Q1a.jpg', true),   // batch1 → 'A' (correct)
   '38':  imageLabel('KC-01_Q1f.jpg', false),  // batch2 → 'B' (wrong)
   '36':  imageLabel('N/A', false),             // batch3 → '9999' (N/A)
   '217': imageLabel('KC-01_Q1m.jpg', true),   // batch4 → 'A' (correct)
+  // Set 1 per-batch follow-up + observation (IMAGE_BLOCK_BATCH_QIDS[1])
+  '153': arr(['可唔可以講下你喺呢個場景度做過啲咩？']),  // Q9.1b batch1 follow-up
+  '157': val('Student recalled climbing the wall'),    // Q9.1c batch1 observation
+  '155': arr(['你記得你哋一起做咗啲咩嗎？', '嗰陣你覺得點呀？']), // Q9.2b batch2 follow-up
+  '158': val('Student pointed confidently'),           // Q9.2c batch2 observation
+  '159': val('Hesitated briefly'),                    // Q9.3b batch3 observation
+  '218': val(''),                                     // Q9.4b batch4 observation (blank)
+
+  // Set 2: all N/A
+  '161': imageLabel(null, false),   // batch1
+  '164': imageLabel(null, false),   // batch2
+  '167': imageLabel(null, false),   // batch3
+  '220': imageLabel(null, false),   // batch4
+  // Set 2 per-batch follow-up + observation (IMAGE_BLOCK_BATCH_QIDS[2])
+  '202': arr([]),   // Q10.1b batch1 follow-up (not asked)
+  '163': val(''),  // Q10.1c batch1 observation
+  '165': arr([]),  // Q10.2b batch2 follow-up
+  '166': val(''),  // Q10.2c batch2 observation
+  '169': val(''),  // Q10.3b batch3 observation
+  '221': val(''),  // Q10.4b batch4 observation
 
   // ── Closing ───────────────────────────────────────────────────────────────
   // Q11a (160): control_checkbox → Array
@@ -122,7 +143,13 @@ for (const [qid, v] of Object.entries(answers)) {
 // 2. All expected qids present
 const REQUIRED = ['204','212','207','100','58','186','201','213',
   '16','144','105','24','148','106','25','149','112','26','150','116',
-  '211','151','120','209','152','124','187','127','160','43']
+  '211','151','120','209','152','124','187','127',
+  // Image set 1 pickers + per-batch follow-up/observation
+  '35','38','36','217','153','157','155','158','159','218',
+  // Image set 2 pickers + per-batch follow-up/observation
+  '161','164','167','220','202','163','165','166','169','221',
+  // Closing
+  '160','43']
 for (const qid of REQUIRED) {
   if (!(qid in answers)) issues.push(`qid ${qid}: MISSING from answers`)
 }

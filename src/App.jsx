@@ -6,7 +6,7 @@ import EmojiRating from './components/EmojiRating'
 import FollowUpCheckbox from './components/FollowUpCheckbox'
 import ObservationBox from './components/ObservationBox'
 import ImageBlock from './components/ImageBlock'
-import { FEELINGS_QUESTIONS, MEMORY_QUESTIONS, CLOSING_QUESTIONS, SECTION_LABELS, ADMIN_QIDS, IMAGE_BLOCK_QIDS, CLOSING_QIDS } from './constants/questions'
+import { FEELINGS_QUESTIONS, MEMORY_QUESTIONS, CLOSING_QUESTIONS, SECTION_LABELS, ADMIN_QIDS, IMAGE_BLOCK_QIDS, IMAGE_BLOCK_BATCH_QIDS, CLOSING_QIDS, DISTRICT_MAP } from './constants/questions'
 import { useClassConfig } from './hooks/useClassConfig'
 import { submitToJotform } from './lib/jotform'
 import { saveToSupabase } from './lib/supabase'
@@ -110,13 +110,13 @@ export default function App() {
     answers[ADMIN_QIDS.studentName]     = adminValues.studentNameOverride || student.studentName
     answers[ADMIN_QIDS.schoolName]      = student.schoolName
     answers[ADMIN_QIDS.studentClass]    = adminValues.classIdOverride || student.classId
-    answers[ADMIN_QIDS.district]        = student.district
+    answers[ADMIN_QIDS.district]        = DISTRICT_MAP[student.district] ?? student.district
 
     // Helpers for JotForm field types:
     //   val()  → string  (radio, textbox, textarea, image widget)
     //   arr()  → Array   (control_checkbox — must use indexed submission[qid][i] notation)
     const val = (v)  => v && v !== 'N/A' ? v : '9999'
-    const arr = (a)  => a?.length ? [...a]  : ['9999']
+    const arr = (a)  => a?.length ? [...a]  : []
     // Image picker: JotForm label, not URL. correct=A, wrong=B, N/A or empty=9999
     const imageLabel = (sel, correct) => {
       if (!sel || sel === 'N/A') return '9999'
@@ -138,7 +138,7 @@ export default function App() {
     answers[MEMORY_QUESTIONS.q8.qid] = val(memoryValues.q8)
 
     for (const block of config?.blocks ?? []) {
-      const v = imageValues[block.index] ?? {}
+      const v     = imageValues[block.index] ?? {}
       const b1qid = IMAGE_BLOCK_QIDS.batch1[block.index]
       const b2qid = IMAGE_BLOCK_QIDS.batch2[block.index]
       const b3qid = IMAGE_BLOCK_QIDS.batch3[block.index]
@@ -147,6 +147,17 @@ export default function App() {
       if (b2qid) answers[b2qid] = imageLabel(v.batch2Selected, v.batch2Correct)
       if (b3qid) answers[b3qid] = imageLabel(v.batch3Selected, v.batch3Correct)
       if (b4qid) answers[b4qid] = imageLabel(v.batch4Selected, v.batch4Correct)
+
+      // Per-batch follow-up checkboxes + observation textareas
+      const bqids = IMAGE_BLOCK_BATCH_QIDS[block.index]
+      if (bqids) {
+        if (bqids.b1FollowUp) answers[bqids.b1FollowUp] = arr(v.b1FollowUp)
+        if (bqids.b1Obs)      answers[bqids.b1Obs]       = val(v.b1Obs)
+        if (bqids.b2FollowUp) answers[bqids.b2FollowUp] = arr(v.b2FollowUp)
+        if (bqids.b2Obs)      answers[bqids.b2Obs]       = val(v.b2Obs)
+        if (bqids.b3Obs)      answers[bqids.b3Obs]       = val(v.b3Obs)
+        if (bqids.b4Obs)      answers[bqids.b4Obs]       = val(v.b4Obs)
+      }
     }
 
     answers[CLOSING_QIDS.followUp]    = arr(closingValues.asked)   // control_checkbox
