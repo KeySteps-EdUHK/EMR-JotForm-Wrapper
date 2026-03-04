@@ -126,7 +126,7 @@ export const DISTRICT_MAP = {
   'Tuen Mun':     '屯門',
 }
 
-// Image block qid mappings — image PICKER widgets only (control_widget type)
+// Image block qid mappings — textbox fields that store the image selection result (A/B/9999)
 // Each question set has 4 batches:
 //   batch1 = scene (cols a–d, correct=a)     Q{n}.1a  (JotForm Q{n+8}.1a)
 //   batch2 = staff (cols e–h, correct=e)     Q{n}.2a  (JotForm Q{n+8}.2a)
