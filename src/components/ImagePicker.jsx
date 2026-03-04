@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
-/** Fisher-Yates shuffle (deterministic per render via useMemo) */
+/** Fisher-Yates shuffle — stable per mount via useMemo */
 function shuffle(arr) {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {
@@ -10,17 +10,77 @@ function shuffle(arr) {
   return a
 }
 
+// Four distinct placeholder colours, one per slot
+const SLOT_COLORS = [
+  { bg: 'bg-navy/10',   text: 'text-navy'       },
+  { bg: 'bg-orange/10', text: 'text-orange'      },
+  { bg: 'bg-green/10',  text: 'text-green'       },
+  { bg: 'bg-yellow/20', text: 'text-slate-600'   },
+]
+
+/**
+ * Single image tile — shows the image, or a coloured placeholder if
+ * the src is missing / fails to load.
+ */
+function Tile({ img, index, isSelected, onClick }) {
+  const [broken, setBroken] = useState(false)
+  const showPlaceholder = !img.src || broken
+  const slot = SLOT_COLORS[index % 4]
+  // Derive a short label from the filename, e.g. "KC-01_Q1a"
+  const label = img.src ? img.src.split('/').pop().replace(/\.[^.]+$/, '') : '圖片'
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`relative aspect-square rounded-2xl overflow-hidden border-4 transition-all active:scale-95 touch-manipulation
+        ${isSelected
+          ? 'border-orange shadow-lg shadow-orange/20'
+          : 'border-transparent hover:border-orange/30'}`}
+    >
+      {/* Real image */}
+      {img.src && !broken && (
+        <img
+          src={img.src}
+          alt=""
+          className="w-full h-full object-cover"
+          draggable="false"
+          onError={() => setBroken(true)}
+        />
+      )}
+
+      {/* Placeholder shown when no src or image fails to load */}
+      {showPlaceholder && (
+        <div className={`w-full h-full flex flex-col items-center justify-center gap-1.5 ${slot.bg}`}>
+          <span className="text-3xl">🖼️</span>
+          <span className={`text-[9px] font-medium text-center px-1 leading-tight ${slot.text} opacity-70`}>
+            {label}
+          </span>
+        </div>
+      )}
+
+      {/* Selection checkmark */}
+      {isSelected && (
+        <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-orange flex items-center justify-center shadow">
+          <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 12 12">
+            <path d="M10.28 2.28L4 8.56 1.72 6.28a1 1 0 00-1.44 1.44l3 3a1 1 0 001.44 0l7-7a1 1 0 00-1.44-1.44z" />
+          </svg>
+        </div>
+      )}
+    </button>
+  )
+}
+
 /**
  * 2×2 image picker.
  *
  * Props:
- *   images      [{src, isCorrect}] — exactly 4 items, order will be shuffled
- *   selected    string|null        — currently selected src
- *   onSelect    (src, isCorrect) => void
- *   question    string             — question text shown above the grid
+ *   images   [{src, isCorrect}] — exactly 4 items, shuffled on mount
+ *   selected string|null        — currently selected src
+ *   onSelect (src, isCorrect) => void
+ *   question string             — question text shown above the grid
  */
 export default function ImagePicker({ images, selected, onSelect, question }) {
-  // Shuffle once on mount; stable across re-renders unless images array reference changes
   const shuffled = useMemo(() => shuffle(images), [images])
 
   return (
@@ -31,40 +91,15 @@ export default function ImagePicker({ images, selected, onSelect, question }) {
         </p>
       )}
       <div className="grid grid-cols-2 gap-3">
-        {shuffled.map((img, i) => {
-          const isSelected = selected === img.src
-          return (
-            <button
-              key={i}
-              type="button"
-              onClick={() => onSelect(img.src, img.isCorrect)}
-              className={`relative aspect-square rounded-2xl overflow-hidden border-4 transition-all active:scale-95
-                ${isSelected
-                  ? 'border-orange shadow-lg shadow-orange/20'
-                  : 'border-transparent hover:border-orange/30'}`}
-            >
-              {img.src ? (
-                <img
-                  src={img.src}
-                  alt=""
-                  className="w-full h-full object-cover"
-                  draggable="false"
-                />
-              ) : (
-                <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300 text-xs">
-                  No image
-                </div>
-              )}
-              {isSelected && (
-                <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-orange flex items-center justify-center shadow">
-                  <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 12 12">
-                    <path d="M10.28 2.28L4 8.56 1.72 6.28a1 1 0 00-1.44 1.44l3 3a1 1 0 001.44 0l7-7a1 1 0 00-1.44-1.44z" />
-                  </svg>
-                </div>
-              )}
-            </button>
-          )
-        })}
+        {shuffled.map((img, i) => (
+          <Tile
+            key={i}
+            img={img}
+            index={i}
+            isSelected={selected === img.src}
+            onClick={() => onSelect(img.src, img.isCorrect)}
+          />
+        ))}
       </div>
     </div>
   )
