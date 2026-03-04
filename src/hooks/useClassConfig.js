@@ -29,14 +29,20 @@ export function useClassConfig() {
         _cache = await fetchCSV(BASE + 'config/classes.csv')
       }
 
+      console.log(`%c[ClassConfig] looking up "${classId}" in ${_cache.length} rows`, 'color:#f99d33;font-weight:bold')
+
       const row = _cache.find(
         r => r['ClassID']?.trim() === classId.trim()
       )
 
       if (!row) {
+        console.warn(`[ClassConfig] ✗ no row found for classId="${classId}"`)
+        console.log('[ClassConfig] available ClassIDs:', _cache.map(r => r['ClassID']).filter(Boolean))
         setError(`找不到班別設定：${classId}`)
         return null
       }
+
+      console.log('[ClassConfig] ✓ row found:', row)
 
       const blocks = []
       for (let n = 1; n <= 8; n++) {
