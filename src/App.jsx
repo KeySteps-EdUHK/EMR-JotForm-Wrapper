@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ProgressBar from './components/ProgressBar'
 import StudentLookup from './components/StudentLookup'
 import AdminFields from './components/AdminFields'
@@ -12,6 +12,8 @@ import { saveToSupabase } from './lib/supabase'
 
 // Section indices: 0=student 1=admin 2=feelings 3=memory 4=images 5=done
 const DONE = 5
+// DOM ids for the four scrollable sections
+const SECTION_IDS = ['section-1', 'section-2', 'section-3', 'section-4']
 
 export default function App() {
   const [section, setSection]               = useState(0)
@@ -24,6 +26,25 @@ export default function App() {
   const [closingValues, setClosingValues]   = useState({ asked: [], observation: '' })
   const [submitState, setSubmitState]       = useState(null) // null | 'loading' | 'success' | 'error'
   const [submitError, setSubmitError]       = useState(null)
+
+  // ── Scroll-based progress detection ──────────────────────────────────────
+  // Attach once when student is confirmed; update section state as user scrolls.
+  useEffect(() => {
+    if (!student) return
+
+    const onScroll = () => {
+      const threshold = window.innerHeight * 0.4
+      let active = 1
+      for (let i = 0; i < SECTION_IDS.length; i++) {
+        const el = document.getElementById(SECTION_IDS[i])
+        if (el && el.getBoundingClientRect().top <= threshold) active = i + 1
+      }
+      setSection(s => s === DONE ? s : active)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [!!student]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleStudentResolved({ student, config }) {
     setStudent(student)
@@ -55,9 +76,9 @@ export default function App() {
     answers[ADMIN_QIDS.district]        = student.district
 
     for (const q of FEELINGS_QUESTIONS) {
-      if (feelingsValues[q.key]) answers[q.qid] = feelingsValues[q.key]
+      if (feelingsValues[q.key])              answers[q.qid]          = feelingsValues[q.key]
       if (feelingsValues[q.followUpKey]?.length) answers[q.followUpQid] = feelingsValues[q.followUpKey].join(', ')
-      if (feelingsValues[q.observationKey])       answers[q.observationQid] = feelingsValues[q.observationKey]
+      if (feelingsValues[q.observationKey])   answers[q.observationQid] = feelingsValues[q.observationKey]
     }
 
     if (memoryValues.q7) answers[MEMORY_QUESTIONS.q7.qid] = memoryValues.q7
@@ -91,7 +112,7 @@ export default function App() {
     try {
       await saveToSupabase({
         studentId: student.studentId,
-        classId: student.classId,
+        classId:   student.classId,
         sessionId: config?.sessionId,
         jotformId,
         payload,
@@ -115,57 +136,79 @@ export default function App() {
     setSection(DONE)
   }
 
+  const adminReady = adminValues.interviewerName && adminValues.interviewDate && adminValues.phase
+
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <header className="bg-navy text-white px-4 pt-safe-top pb-3 sticky top-0 z-10 shadow-md">
+
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <header className="bg-white border-b border-slate-100 px-4 pt-safe-top pb-2 sticky top-0 z-10 shadow-sm">
         <div className="max-w-lg mx-auto flex items-center gap-3">
-          <img src={import.meta.env.BASE_URL + 'assets/logos/KS.png'} alt="KeySteps" className="h-8 w-8 object-contain" />
+
+          {/* Logo — substantially larger on white bg */}
+          <img
+            src={import.meta.env.BASE_URL + 'assets/logos/KS.png'}
+            alt="KeySteps"
+            className="h-14 w-14 object-contain shrink-0"
+          />
+
+          {/* Title */}
           <div className="flex-1 min-w-0">
-            <h1 className="font-bold text-sm leading-tight">童亮館 – 事件記憶測試</h1>
-            <p className="text-white/60 text-xs">Event-Based Memory Test · Round II</p>
+            <h1 className="font-bold text-sm leading-tight text-navy">童亮館 – 事件記憶測試</h1>
+            <p className="text-slate-400 text-xs">Event-Based Memory Test · Round II</p>
           </div>
+
+          {/* Student info pill — shows all key fields when confirmed */}
           {student && (
-            <span className="badge bg-orange/20 text-orange text-xs shrink-0">
-              {student.studentId}
-            </span>
+            <div className="text-right shrink-0 max-w-[150px]">
+              <p className="text-xs font-bold text-navy leading-tight truncate">
+                {student.studentName || student.studentId}
+              </p>
+              <p className="text-[10px] text-slate-500 leading-tight truncate">{student.classId}</p>
+              <p className="text-[10px] text-orange leading-tight truncate">{student.district}</p>
+              <p className="text-[10px] text-slate-400 leading-tight">{student.studentId}</p>
+            </div>
           )}
         </div>
 
+        {/* Progress bar — driven by scroll */}
         {section > 0 && section < DONE && (
-          <div className="max-w-lg mx-auto mt-2">
+          <div className="max-w-lg mx-auto mt-1">
             <ProgressBar current={section - 1} total={SECTION_LABELS.length} labels={SECTION_LABELS} />
           </div>
         )}
       </header>
 
+      {/* ── Main content ───────────────────────────────────────────────────── */}
       <main className="max-w-lg mx-auto px-4 py-4 pb-24 space-y-4">
 
-        {/* ── Section 0: Student lookup ── */}
+        {/* Section 0: Student lookup */}
         {section === 0 && (
           <StudentLookup onResolved={handleStudentResolved} />
         )}
 
-        {/* ── Sections 1–4: shown together once student confirmed ── */}
+        {/* Sections 1–4: all rendered once student confirmed */}
         {section >= 1 && section < DONE && student && (
           <>
-            {/* Section 1: Admin */}
-            <div>
+            {/* ── Section 1: Admin ── */}
+            <div id="section-1">
               <AdminFields
                 student={student}
                 values={adminValues}
                 onChange={(k, v) => setAdminValues(p => ({ ...p, [k]: v }))}
               />
-              {section === 1 && (
-                <NavButtons
-                  onNext={() => setSection(2)}
-                  nextDisabled={!adminValues.interviewerName || !adminValues.interviewDate || !adminValues.phase}
-                />
-              )}
+              {/* Scroll-to-next shortcut — also serves as a validation cue */}
+              <button
+                onClick={() => document.getElementById('section-2')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                disabled={!adminReady}
+                className="btn-primary w-full mt-3 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                繼續填寫 ↓
+              </button>
             </div>
 
-            {/* Section 2: Feelings Q1–Q6 */}
-            <div>
+            {/* ── Section 2: Feelings Q1–Q6 ── */}
+            <div id="section-2">
               <div className="section-card">
                 <div className="section-title">
                   <span className="badge bg-pink/10 text-pink">第一部分</span>
@@ -206,13 +249,10 @@ export default function App() {
                   ))}
                 </div>
               </div>
-              {section === 2 && (
-                <NavButtons onBack={() => setSection(1)} onNext={() => setSection(3)} />
-              )}
             </div>
 
-            {/* Section 3: Memory Q7–Q8 */}
-            <div>
+            {/* ── Section 3: Memory Q7–Q8 ── */}
+            <div id="section-3">
               <div className="section-card">
                 <div className="section-title">
                   <span className="badge bg-yellow/20 text-slate-700">第二部分</span>
@@ -241,13 +281,10 @@ export default function App() {
                   </div>
                 </div>
               </div>
-              {section === 3 && (
-                <NavButtons onBack={() => setSection(2)} onNext={() => setSection(4)} />
-              )}
             </div>
 
-            {/* Section 4: Image blocks + closing */}
-            <div>
+            {/* ── Section 4: Image blocks + closing + submit ── */}
+            <div id="section-4">
               <div className="section-card">
                 <div className="section-title">
                   <span className="badge bg-green/10 text-green">第三部分</span>
@@ -301,25 +338,21 @@ export default function App() {
                 </div>
               </div>
 
-              {section === 4 && (
-                <div className="mt-4">
-                  {submitState === 'error' && (
-                    <div className="mb-4 p-4 rounded-xl bg-pink/10 border border-pink/20 text-sm text-pink whitespace-pre-wrap">
-                      ⚠️ 提交時發生錯誤：{'\n'}{submitError}
-                    </div>
-                  )}
-                  <button
-                    onClick={handleSubmit}
-                    disabled={submitState === 'loading'}
-                    className="btn-primary w-full text-base py-4 disabled:opacity-50"
-                  >
-                    {submitState === 'loading' ? '提交中…' : '提交記錄'}
-                  </button>
-                  <button onClick={() => setSection(3)} className="w-full mt-2 text-sm text-slate-400 py-2">
-                    ← 返回上一頁
-                  </button>
-                </div>
-              )}
+              {/* Submit */}
+              <div className="mt-4">
+                {submitState === 'error' && (
+                  <div className="mb-4 p-4 rounded-xl bg-pink/10 border border-pink/20 text-sm text-pink whitespace-pre-wrap">
+                    ⚠️ 提交時發生錯誤：{'\n'}{submitError}
+                  </div>
+                )}
+                <button
+                  onClick={handleSubmit}
+                  disabled={submitState === 'loading'}
+                  className="btn-primary w-full text-base py-4 disabled:opacity-50"
+                >
+                  {submitState === 'loading' ? '提交中…' : '提交記錄'}
+                </button>
+              </div>
             </div>
           </>
         )}
@@ -346,23 +379,6 @@ export default function App() {
           </div>
         )}
       </main>
-    </div>
-  )
-}
-
-function NavButtons({ onBack, onNext, nextDisabled }) {
-  return (
-    <div className="flex gap-3 mt-4">
-      {onBack && (
-        <button onClick={onBack} className="flex-1 py-3 rounded-xl border-2 border-slate-200 text-slate-500 font-semibold text-sm hover:border-navy/30 transition-colors">
-          ← 返回
-        </button>
-      )}
-      {onNext && (
-        <button onClick={onNext} disabled={nextDisabled} className="flex-1 btn-primary disabled:opacity-40 disabled:cursor-not-allowed">
-          繼續 →
-        </button>
-      )}
     </div>
   )
 }
