@@ -115,6 +115,12 @@ export default function App() {
     // Helper: treat missing or explicit N/A as the sentinel value 9999
     const val  = (v) => v && v !== 'N/A' ? v : '9999'
     const list = (a) => a?.length ? a.join(', ') : '9999'
+    // Image picker: submit JotForm item label (A = correct, B = wrong)
+    // NOT the local src URL — JotForm widget expects the label string
+    const imageLabel = (sel, correct) => {
+      if (!sel || sel === 'N/A') return '9999'
+      return correct ? 'A' : 'B'
+    }
 
     for (const q of FEELINGS_QUESTIONS) {
       answers[q.qid]            = val(feelingsValues[q.key])
@@ -131,10 +137,10 @@ export default function App() {
       const b2qid = IMAGE_BLOCK_QIDS.batch2[block.index]
       const b3qid = IMAGE_BLOCK_QIDS.batch3[block.index]
       const b4qid = IMAGE_BLOCK_QIDS.batch4[block.index]
-      if (b1qid) answers[b1qid] = val(v.batch1Selected)
-      if (b2qid) answers[b2qid] = val(v.batch2Selected)
-      if (b3qid) answers[b3qid] = val(v.batch3Selected)
-      if (b4qid) answers[b4qid] = val(v.batch4Selected)
+      if (b1qid) answers[b1qid] = imageLabel(v.batch1Selected, v.batch1Correct)
+      if (b2qid) answers[b2qid] = imageLabel(v.batch2Selected, v.batch2Correct)
+      if (b3qid) answers[b3qid] = imageLabel(v.batch3Selected, v.batch3Correct)
+      if (b4qid) answers[b4qid] = imageLabel(v.batch4Selected, v.batch4Correct)
     }
 
     answers[CLOSING_QIDS.followUp]    = list(closingValues.asked)
