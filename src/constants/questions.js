@@ -102,6 +102,7 @@ export const ADMIN_QIDS = {
   studentName:     '58',
   schoolName:      '186',
   studentClass:    '201',
+  district:        '213',
 }
 
 // Image block qid mappings — TODO: update once new JotForm is published

@@ -52,6 +52,7 @@ export default function App() {
     answers[ADMIN_QIDS.studentName]     = adminValues.studentNameOverride || student.studentName
     answers[ADMIN_QIDS.schoolName]      = student.schoolName
     answers[ADMIN_QIDS.studentClass]    = student.classId
+    answers[ADMIN_QIDS.district]        = student.district
 
     // Feelings
     for (const q of FEELINGS_QUESTIONS) {
