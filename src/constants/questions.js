@@ -117,17 +117,32 @@ export const ADMIN_QIDS = {
   district:        '213',
 }
 
-// Image block qid mappings — TODO: update once new JotForm is published
+// Image block qid mappings — image PICKER widgets only (control_widget type)
 // Each question set has 4 batches:
-//   batch1 = scene (cols a–d, correct=a)     Q{n}.1
-//   batch2 = staff (cols e–h, correct=e)     Q{n}.2
-//   batch3 = set 3 (cols i–l, correct=i)     Q{n}.3
-//   batch4 = set 4 (cols m–p, correct=m)     Q{n}.4
+//   batch1 = scene (cols a–d, correct=a)     Q{n}.1a  (JotForm Q{n+8}.1a)
+//   batch2 = staff (cols e–h, correct=e)     Q{n}.2a  (JotForm Q{n+8}.2a)
+//   batch3 = set 3 (cols i–l, correct=i)     Q{n}.3a  (JotForm Q{n+8}.3a)
+//   batch4 = set 4 (cols m–p, correct=m)     Q{n}.4a  (JotForm Q{n+8}.4a)
+//
+// Round I clone schema has 2 sets (Q9, Q10). Sets 3–8 are TODO until Round II form.
+//
+// Per-batch follow-up / observation qids (from Round I schema — for reference):
+//   Set 1: b1 followUp=153 obs=157 | b2 followUp=155 obs=158 | b3 obs=159 | b4 obs=218
+//   Set 2: b1 followUp=202 obs=163 | b2 followUp=165 obs=166 | b3 obs=169 | b4 obs=221
 export const IMAGE_BLOCK_QIDS = {
-  batch1: { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null },
-  batch2: { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null },
-  batch3: { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null },
-  batch4: { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null },
+  //        set:  1     2     3     4     5     6     7     8
+  batch1: { 1: '35',  2: '161', 3: null, 4: null, 5: null, 6: null, 7: null, 8: null },
+  batch2: { 1: '38',  2: '164', 3: null, 4: null, 5: null, 6: null, 7: null, 8: null },
+  batch3: { 1: '36',  2: '167', 3: null, 4: null, 5: null, 6: null, 7: null, 8: null },
+  batch4: { 1: '217', 2: '220', 3: null, 4: null, 5: null, 6: null, 7: null, 8: null },
+}
+
+// Closing section qid mappings (confirmed from Round I schema)
+// Q11a (160) = closing follow-up checkbox  → maps to closingValues.asked
+// Q11b (43)  = closing observation textarea → maps to closingValues.observation
+export const CLOSING_QIDS = {
+  followUp:    '160',
+  observation: '43',
 }
 
 export const SECTION_LABELS = ['基本資料', '感受', '記憶', '圖片', '完成']

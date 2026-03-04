@@ -6,7 +6,7 @@ import EmojiRating from './components/EmojiRating'
 import FollowUpCheckbox from './components/FollowUpCheckbox'
 import ObservationBox from './components/ObservationBox'
 import ImageBlock from './components/ImageBlock'
-import { FEELINGS_QUESTIONS, MEMORY_QUESTIONS, CLOSING_QUESTIONS, SECTION_LABELS, ADMIN_QIDS, IMAGE_BLOCK_QIDS } from './constants/questions'
+import { FEELINGS_QUESTIONS, MEMORY_QUESTIONS, CLOSING_QUESTIONS, SECTION_LABELS, ADMIN_QIDS, IMAGE_BLOCK_QIDS, CLOSING_QIDS } from './constants/questions'
 import { useClassConfig } from './hooks/useClassConfig'
 import { submitToJotform } from './lib/jotform'
 import { saveToSupabase } from './lib/supabase'
@@ -132,6 +132,9 @@ export default function App() {
       if (b3qid && v.batch3Selected) answers[b3qid] = v.batch3Selected
       if (b4qid && v.batch4Selected) answers[b4qid] = v.batch4Selected
     }
+
+    if (closingValues.asked?.length) answers[CLOSING_QIDS.followUp] = closingValues.asked.join(', ')
+    if (closingValues.observation)   answers[CLOSING_QIDS.observation] = closingValues.observation
 
     const payload = {
       student, config: { classId: config?.classId, sessionId: config?.sessionId },
