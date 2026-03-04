@@ -101,6 +101,18 @@ export default function ImagePicker({ images, selected, onSelect, question }) {
           />
         ))}
       </div>
+
+      {/* N/A — respondent doesn't know / cannot identify any image */}
+      <button
+        type="button"
+        onClick={() => onSelect('N/A', false)}
+        className={`w-full mt-3 py-2.5 rounded-2xl border-2 text-sm font-medium transition-all active:scale-95 touch-manipulation
+          ${selected === 'N/A'
+            ? 'border-orange text-orange bg-orange/5 shadow shadow-orange/20'
+            : 'border-slate-200 text-slate-400 hover:border-orange/30 hover:text-slate-500'}`}
+      >
+        唔知道 / N/A
+      </button>
     </div>
   )
 }

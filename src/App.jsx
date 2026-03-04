@@ -112,14 +112,18 @@ export default function App() {
     answers[ADMIN_QIDS.studentClass]    = adminValues.classIdOverride || student.classId
     answers[ADMIN_QIDS.district]        = student.district
 
+    // Helper: treat missing or explicit N/A as the sentinel value 9999
+    const val  = (v) => v && v !== 'N/A' ? v : '9999'
+    const list = (a) => a?.length ? a.join(', ') : '9999'
+
     for (const q of FEELINGS_QUESTIONS) {
-      if (feelingsValues[q.key])                 answers[q.qid]           = feelingsValues[q.key]
-      if (feelingsValues[q.followUpKey]?.length) answers[q.followUpQid]   = feelingsValues[q.followUpKey].join(', ')
-      if (feelingsValues[q.observationKey])      answers[q.observationQid] = feelingsValues[q.observationKey]
+      answers[q.qid]            = val(feelingsValues[q.key])
+      answers[q.followUpQid]    = list(feelingsValues[q.followUpKey])
+      answers[q.observationQid] = val(feelingsValues[q.observationKey])
     }
 
-    if (memoryValues.q7) answers[MEMORY_QUESTIONS.q7.qid] = memoryValues.q7
-    if (memoryValues.q8) answers[MEMORY_QUESTIONS.q8.qid] = memoryValues.q8
+    answers[MEMORY_QUESTIONS.q7.qid] = val(memoryValues.q7)
+    answers[MEMORY_QUESTIONS.q8.qid] = val(memoryValues.q8)
 
     for (const block of config?.blocks ?? []) {
       const v = imageValues[block.index] ?? {}
@@ -127,14 +131,14 @@ export default function App() {
       const b2qid = IMAGE_BLOCK_QIDS.batch2[block.index]
       const b3qid = IMAGE_BLOCK_QIDS.batch3[block.index]
       const b4qid = IMAGE_BLOCK_QIDS.batch4[block.index]
-      if (b1qid && v.batch1Selected) answers[b1qid] = v.batch1Selected
-      if (b2qid && v.batch2Selected) answers[b2qid] = v.batch2Selected
-      if (b3qid && v.batch3Selected) answers[b3qid] = v.batch3Selected
-      if (b4qid && v.batch4Selected) answers[b4qid] = v.batch4Selected
+      if (b1qid) answers[b1qid] = val(v.batch1Selected)
+      if (b2qid) answers[b2qid] = val(v.batch2Selected)
+      if (b3qid) answers[b3qid] = val(v.batch3Selected)
+      if (b4qid) answers[b4qid] = val(v.batch4Selected)
     }
 
-    if (closingValues.asked?.length) answers[CLOSING_QIDS.followUp] = closingValues.asked.join(', ')
-    if (closingValues.observation)   answers[CLOSING_QIDS.observation] = closingValues.observation
+    answers[CLOSING_QIDS.followUp]    = list(closingValues.asked)
+    answers[CLOSING_QIDS.observation] = val(closingValues.observation)
 
     const payload = {
       student, config: { classId: config?.classId, sessionId: config?.sessionId },
