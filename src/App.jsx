@@ -277,7 +277,7 @@ export default function App() {
               <div className="section-card">
                 <div className="section-title">
                   <span className="badge bg-pink/10 text-pink">第一部分</span>
-                  幼兒對童亮館的感受
+                  幼兒在童亮館的體驗
                 </div>
                 <div className="space-y-8">
                   {FEELINGS_QUESTIONS.map(q => (
@@ -321,7 +321,7 @@ export default function App() {
               <div className="section-card">
                 <div className="section-title">
                   <span className="badge bg-yellow/20 text-slate-700">第二部分</span>
-                  記憶問題
+                  記憶回想測試
                 </div>
                 <div className="space-y-5">
                   <div>
@@ -352,13 +352,13 @@ export default function App() {
             <div id="section-4">
               <div className="section-card">
                 <div className="section-title">
-                  <span className="badge bg-green/10 text-green">第三部分</span>
-                  圖片記憶
+                  <span className="badge bg-green/10 text-green">第二部分（續）</span>
+                  記憶回想測試——圖片辨認
                 </div>
 
                 {config?.blocks?.length ? (
                   <>
-                    <p className="text-xs text-slate-400 mb-5">共 {config.blocks.length} 組圖片</p>
+                    <p className="text-xs text-slate-400 mb-5">共 {config.blocks.length} 個主題</p>
                     <div className="space-y-10">
                       {config.blocks.map(block => (
                         <div key={block.index} className="pb-8 border-b border-slate-100 last:border-0">
@@ -366,7 +366,7 @@ export default function App() {
                             <span className="w-7 h-7 rounded-full bg-navy text-white text-sm flex items-center justify-center font-bold shrink-0">
                               {block.index}
                             </span>
-                            <span className="text-xs text-slate-400 font-medium">第 {block.index} 組</span>
+                            <span className="text-xs text-slate-400 font-medium">主題 {block.index}</span>
                           </div>
                           <ImageBlock
                             block={block}
@@ -386,8 +386,8 @@ export default function App() {
                 {/* Closing questions */}
                 <div className="mt-8 pt-6 border-t border-slate-100">
                   <div className="section-title">
-                    <span className="badge bg-navy/10 text-navy">第四部分</span>
-                    完結問題 Q12
+                    <span className="badge bg-navy/10 text-navy">第三部分</span>
+                    對童亮館未來的想法
                   </div>
                   <FollowUpCheckbox
                     label="請向幼兒提問以下問題"
@@ -398,7 +398,7 @@ export default function App() {
                   <ObservationBox
                     value={closingValues.observation}
                     onChange={v => setClosingValues(p => ({ ...p, observation: v }))}
-                    placeholder="Q12 觀察／補充記錄（選填）"
+                    placeholder="Q12b 觀察／補充記錄（選填）"
                   />
                 </div>
               </div>
