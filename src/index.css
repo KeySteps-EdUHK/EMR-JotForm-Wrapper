@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Noto Sans TC', system-ui, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-800;
+  }
+}
+
+@layer components {
+  /* Section card */
+  .section-card {
+    @apply bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-4;
+  }
+
+  /* Section title */
+  .section-title {
+    @apply text-navy font-bold text-lg mb-4 flex items-center gap-2;
+  }
+
+  /* Form label */
+  .form-label {
+    @apply block text-sm font-medium text-slate-600 mb-1;
+  }
+
+  /* Text input */
+  .form-input {
+    @apply w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm
+           focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange
+           transition-colors placeholder:text-slate-300;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply bg-orange hover:bg-orange/90 text-white font-semibold
+           rounded-xl px-6 py-3 transition-colors active:scale-95;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply bg-navy hover:bg-navy/90 text-white font-semibold
+           rounded-xl px-6 py-3 transition-colors active:scale-95;
+  }
+
+  /* Pill badge */
+  .badge {
+    @apply inline-flex items-center rounded-full px-3 py-0.5 text-xs font-medium;
+  }
+}
