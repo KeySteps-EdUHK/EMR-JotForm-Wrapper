@@ -45,7 +45,7 @@ export default function AdminFields({ student, values, onChange, schoolClasses =
         {/* Class — always a dropdown (pre-selected = student's class); options show "{Class Name} ({Class ID})" */}
         <div className="sm:col-span-2">
           <label className="form-label">
-            班別 *
+            班別 <span className="text-pink">*</span>
             {schoolClasses.length > 0 && (
               <span className="text-slate-400 font-normal ml-1">（{schoolClasses.length} 個班別）</span>
             )}
@@ -73,7 +73,7 @@ export default function AdminFields({ student, values, onChange, schoolClasses =
         </div>
 
         <div>
-          <label className="form-label">訪問老師姓名 *</label>
+          <label className="form-label">訪問老師姓名 <span className="text-pink">*</span></label>
           <input
             type="text"
             className={`form-input ${err('interviewerName')}`}
@@ -83,7 +83,7 @@ export default function AdminFields({ student, values, onChange, schoolClasses =
         </div>
 
         <div>
-          <label className="form-label">訪問日期 *</label>
+          <label className="form-label">訪問日期 <span className="text-pink">*</span></label>
           <input
             type="date"
             className={`form-input ${err('interviewDate')}`}
@@ -92,7 +92,7 @@ export default function AdminFields({ student, values, onChange, schoolClasses =
         </div>
 
         <div>
-          <label className="form-label">計劃階段 *</label>
+          <label className="form-label">計劃階段 <span className="text-pink">*</span></label>
           <select className={`form-input ${err('phase')}`} {...field('phase')}>
             <option value="">請選擇</option>
             <option>Trial</option>
