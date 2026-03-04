@@ -65,7 +65,7 @@ function Tile({ img, index, isSelected, onClick }) {
         <img
           src={resolvedSrc}
           alt=""
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           draggable="false"
           onLoad={handleLoad}
           onError={handleError}
