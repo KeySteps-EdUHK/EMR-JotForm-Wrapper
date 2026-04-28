@@ -1,3 +1,8 @@
+import { useStudentLookup } from '../hooks/useStudentLookup'
+import { useClassConfig } from '../hooks/useClassConfig'
+import { PHASES } from '../constants/questions'
+import { useLanguage } from '../i18n/LanguageContext'
+
 /**
  * Admin + student info fields.
  *
@@ -10,6 +15,8 @@
  *   touched       — boolean — when true, highlights empty required fields in pink
  */
 export default function AdminFields({ student, values, onChange, schoolClasses = [], onClassChange, touched = false }) {
+  const { t } = useLanguage()
+
   const field = (key) => ({
     value: values[key] ?? '',
     onChange: e => onChange(key, e.target.value),
@@ -29,15 +36,15 @@ export default function AdminFields({ student, values, onChange, schoolClasses =
   return (
     <div className="section-card">
       <div className="section-title">
-        <span className="w-7 h-7 rounded-full bg-navy text-white text-sm flex items-center justify-center font-bold shrink-0">2</span>
-        基本資料
+        <span className="w-7 h-7 rounded-full bg-navy text-white text-sm flex items-center justify-center font-bold shrink-0">{t('adminFields.sectionNumber')}</span>
+        {t('adminFields.sectionTitle')}
       </div>
 
       {/* Read-only student info chips */}
       <div className="flex flex-wrap gap-2 mb-5">
-        <InfoChip label="學生" value={student.studentName} color="navy" />
-        <InfoChip label="學校" value={student.schoolName}  color="orange" />
-        <InfoChip label="地區" value={student.district}    color="green" />
+        <InfoChip label={t('adminFields.chipStudent')} value={student.studentName} color="navy" />
+        <InfoChip label={t('adminFields.chipSchool')} value={student.schoolName}  color="orange" />
+        <InfoChip label={t('adminFields.chipDistrict')} value={student.district}    color="green" />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -45,9 +52,9 @@ export default function AdminFields({ student, values, onChange, schoolClasses =
         {/* Class — always a dropdown (pre-selected = student's class); options show "{Class Name} ({Class ID})" */}
         <div className="sm:col-span-2">
           <label className="form-label">
-            班別 <span className="text-pink">*</span>
+            {schoolClasses.length > 0 ? t('adminFields.classLabelRequired') : t('adminFields.classLabel')}
             {schoolClasses.length > 0 && (
-              <span className="text-slate-400 font-normal ml-1">（{schoolClasses.length} 個班別）</span>
+              <span className="text-slate-400 font-normal ml-1">{t('adminFields.classOptionsCount', { count: schoolClasses.length })}</span>
             )}
           </label>
           {schoolClasses.length > 0 ? (
@@ -73,17 +80,17 @@ export default function AdminFields({ student, values, onChange, schoolClasses =
         </div>
 
         <div>
-          <label className="form-label">訪問老師姓名 <span className="text-pink">*</span></label>
+          <label className="form-label">{t('adminFields.interviewerNameLabel')}</label>
           <input
             type="text"
             className={`form-input ${err('interviewerName')}`}
-            placeholder="請輸入姓名"
+            placeholder={t('adminFields.interviewerNamePlaceholder')}
             {...field('interviewerName')}
           />
         </div>
 
         <div>
-          <label className="form-label">訪問日期 <span className="text-pink">*</span></label>
+          <label className="form-label">{t('adminFields.interviewDateLabel')}</label>
           <input
             type="date"
             className={`form-input ${err('interviewDate')}`}
@@ -92,19 +99,16 @@ export default function AdminFields({ student, values, onChange, schoolClasses =
         </div>
 
         <div>
-          <label className="form-label">計劃階段 <span className="text-pink">*</span></label>
+          <label className="form-label">{t('adminFields.phaseLabel')}</label>
           <select className={`form-input ${err('phase')}`} {...field('phase')}>
-            <option value="">請選擇</option>
-            <option>Trial</option>
-            <option>Pilot</option>
-            <option>Round I</option>
-            <option>Round II</option>
+            <option value="">{t('adminFields.phaseOptionDefault')}</option>
+            {PHASES.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
         </div>
 
         <div>
-          <label className="form-label">學生姓名 <span className="text-slate-400 font-normal">（可修改）</span></label>
-          <input type="text" className="form-input" placeholder="自動填入" {...field('studentNameOverride')} />
+          <label className="form-label">{t('adminFields.studentNameLabel')} <span className="text-slate-400 font-normal">{t('adminFields.studentNameModifier')}</span></label>
+          <input type="text" className="form-input" placeholder={t('adminFields.studentNamePlaceholder')} {...field('studentNameOverride')} />
         </div>
 
       </div>

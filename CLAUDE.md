@@ -39,6 +39,57 @@ District prefixes: `KC`, `SSP`, `ST`, `TM`, `YL`
 
 Next.js was considered but rejected — GitHub Pages only serves static files.
 
+## Internationalisation (i18n)
+
+All UI text lives in `src/i18n/translations.json`. One file, two top-level keys (`zh` / `en`).
+
+### `translations.json` API
+
+```js
+const { t } = useLanguage()
+```
+
+| Call | Returns | Example |
+|---|---|---|
+| `t('section.key')` | String with `{param}` interpolation | `t('app.title', { phase: 'Round II' })` |
+| `t('section.keyOptions')` | Array (options list) | `t('feelings.q2bOptions')` → `['opt1','opt2']` |
+| `Array.isArray(value)` guard | Prevents string-coercion of arrays | Added in `LanguageContext` |
+
+### How to add new text
+
+1. Add the key to both `zh` and `en` sections in `translations.json`
+2. Use `t('section.key', { params })` in the component
+3. For array options, ensure the key ends with `Options` so callers know it's an array
+
+### `CLOSING_QUESTION_KEYS` pattern
+
+Closing questions are a flat list of keys (`['q1','q2','q3','q4','q5']`) in `questions.js`.
+App renders them via `CLOSING_QUESTION_KEYS.map(k => t('closing.' + k))`.
+To add a new closing question: add the key to the array AND add `closing.qN` to both locales in translations.json.
+
+### Per-batch follow-up options (ImageBlock)
+
+Each image batch may have different follow-up options. `ImageBlock` receives them as props:
+- `batch1FollowUpOptions`
+- `batch2FollowUpOptions`
+- `batch4FollowUpOptions`
+
+These are built in `App.jsx` from `t('images.batch1FollowUpOptions')` etc. and passed down.
+
+### `sectionLabels` (dynamic)
+
+Section labels in the progress bar are built dynamically in `App.jsx`:
+```js
+sectionLabels = [
+  t('adminFields.sectionTitle'),
+  t('feelings.partTitle'),
+  t('memory.partTitle'),
+  t('images.partTitle'),
+  t('done.title'),
+]
+```
+No static `SECTION_LABELS` array in `questions.js`.
+
 ## Environment Variables
 
 Prefix all with `VITE_` for Vite. Set as GitHub Secrets for CI/CD. See `.env.example`.
@@ -153,23 +204,27 @@ src/
     ObservationBox.jsx        ← Free-text observation textarea
     ImagePicker.jsx           ← 2×2 shuffled image grid; placeholder tiles when images missing
     ImageBlock.jsx            ← One question set: 4 batches, each with its own ImagePicker;
-                                 batch1+2 have FollowUpCheckbox; all 4 batches have ObservationBox
+                                 batch1+2+4 have FollowUpCheckbox; all 4 batches have ObservationBox
     ProgressBar.jsx           ← Scroll-driven progress; line through circle centres
+    LanguageToggle.jsx        ← Language switch toggle (zh/en), reads translations.json
   hooks/
     useStudentLookup.js       ← Fetch + parse students_raw.csv; lookup + getSchoolClasses()
     useClassConfig.js         ← Fetch + parse classes.csv; returns { classId, sessionId, blocks }
+  i18n/
+    translations.json         ← Single source of truth for ALL UI text (zh + en)
+    LanguageContext.jsx       ← React context + useLanguage() hook; persists locale to localStorage
   lib/
     csvParser.js              ← Lightweight CSV parser (handles quoted fields)
     jotform.js                ← POST to JotForm API
     supabase.js               ← Supabase backup (JSON blob)
   constants/
-    questions.js              ← Question text (Cantonese), confirmed qid mappings.
-                                 Exports: FEELINGS_QUESTIONS, MEMORY_QUESTIONS, CLOSING_QUESTIONS,
+    questions.js              ← Pure structure: keys, qids, types only — NO display text.
+                                 Exports: FEELINGS_QUESTIONS, MEMORY_QUESTIONS, CLOSING_QUESTION_KEYS,
                                  ADMIN_QIDS, IMAGE_BLOCK_QIDS (batch1–4 × sets 1–8),
                                  IMAGE_BLOCK_BATCH_QIDS (per-set per-batch follow-up+obs qids),
                                  IMAGE_BATCH_FOLLOWUP_OPTIONS (exact JotForm option text),
                                  DISTRICT_MAP (English→Chinese for dropdown qid 213),
-                                 CLOSING_QIDS, SECTION_LABELS
+                                 CLOSING_QIDS
 ```
 
 ## Survey Flow
@@ -205,7 +260,7 @@ The form has two distinct phases after student lookup:
 | 4 | Part 3 — Image question sets + closing |
 | 5 (DONE) | Success card |
 
-Progress bar maps `progressCurrent = section - 1` onto `SECTION_LABELS` (5 labels, index 0–4).
+Progress bar maps `progressCurrent = section - 1` onto `sectionLabels` (5 labels, index 0–4), built dynamically from translations.
 
 ## UI Behaviour Notes
 
@@ -317,3 +372,4 @@ Authentication: `apiKey` query param or `APIKEY` HTTP header.
 - [ ] Create Supabase `responses` table (SQL in SUPABASE section above)
 - [ ] Set GitHub Secrets for all env vars
 - [ ] Wire qids for image sets 3–8 in `IMAGE_BLOCK_QIDS` and `IMAGE_BLOCK_BATCH_QIDS` once TM sessions are confirmed
+- [x] Language switch: single `translations.json` source of truth, `LanguageProvider` context, all components migrated

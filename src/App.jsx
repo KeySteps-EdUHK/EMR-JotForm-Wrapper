@@ -6,10 +6,12 @@ import EmojiRating from './components/EmojiRating'
 import FollowUpCheckbox from './components/FollowUpCheckbox'
 import ObservationBox from './components/ObservationBox'
 import ImageBlock from './components/ImageBlock'
-import { FEELINGS_QUESTIONS, MEMORY_QUESTIONS, CLOSING_QUESTIONS, SECTION_LABELS, ADMIN_QIDS, IMAGE_BLOCK_QIDS, IMAGE_BLOCK_BATCH_QIDS, CLOSING_QIDS, DISTRICT_MAP } from './constants/questions'
+import LanguageToggle from './components/LanguageToggle'
+import { FEELINGS_QUESTIONS, MEMORY_QUESTIONS, CLOSING_QUESTION_KEYS, ADMIN_QIDS, IMAGE_BLOCK_QIDS, IMAGE_BLOCK_BATCH_QIDS, CLOSING_QIDS, DISTRICT_MAP } from './constants/questions'
 import { useClassConfig } from './hooks/useClassConfig'
 import { submitToJotform } from './lib/jotform'
 import { saveToSupabase } from './lib/supabase'
+import { useLanguage } from './i18n/LanguageContext'
 
 // Section indices: 0=student  1=admin(page)  2=feelings  3=memory  4=images  5=done
 const DONE = 5
@@ -32,6 +34,16 @@ export default function App() {
   const [submitError, setSubmitError]       = useState(null)
 
   const { getConfig } = useClassConfig()
+  const { t } = useLanguage()
+
+  // Derived translated section labels (only used locally — ProgressBar receives them as prop)
+  const sectionLabels = [
+    t('adminFields.sectionTitle'),
+    t('feelings.partTitle'),
+    t('memory.partTitle'),
+    t('images.partTitle'),
+    t('done.title'),
+  ]
 
   // ── Scroll-based progress detection ──────────────────────────────────────
   // Only active once the survey is revealed (surveyReady === true).
@@ -216,10 +228,10 @@ export default function App() {
   const adminReady = adminValues.interviewerName && adminValues.interviewDate && adminValues.phase
 
   // ── Progress bar mapping ──────────────────────────────────────────────────
-  // section 1 (admin page) → current 0 → '基本資料'
-  // section 2 (feelings)   → current 1 → '感受'
-  // section 3 (memory)     → current 2 → '記憶'
-  // section 4 (images)     → current 3 → '圖片'
+  // section 1 (admin page) → current 0 → adminFields.sectionTitle
+  // section 2 (feelings)   → current 1 → feelings.partTitle
+  // section 3 (memory)    → current 2 → memory.partTitle
+  // section 4 (images)    → current 3 → images.partTitle
   // DONE                   → bar hidden, show done card
   const progressCurrent = section - 1
 
@@ -238,9 +250,15 @@ export default function App() {
 
           {/* Title — hides subtitle on small screens to reclaim space */}
           <div className="flex-1 min-w-0">
-            <h1 className="font-bold text-xs sm:text-sm leading-tight text-navy">聽孩子說「童亮館」故事：幼兒活動回憶與學習發展探究 第二輪</h1>
-            <p className="hidden sm:block text-slate-400 text-xs">Event-Based Memory Test · Round II</p>
+            <h1 className="font-bold text-xs sm:text-sm leading-tight text-navy">
+              {t('app.title', { phase: adminValues.phase ? t(`phases.${adminValues.phase}`) : t('phases.Round II') })}
+            </h1>
+            <p className="hidden sm:block text-slate-400 text-xs">
+              {t('app.subtitle')}{adminValues.phase ? ` · ${t(`phases.${adminValues.phase}`)}` : ''}
+            </p>
           </div>
+
+          <LanguageToggle />
 
           {/* Student info pill — compact: name / classId·sessionId / district */}
           {student && (
@@ -262,7 +280,7 @@ export default function App() {
         {/* Progress bar — shown during admin page and scroll survey, not on done */}
         {section > 0 && section < DONE && (
           <div className="max-w-3xl mx-auto mt-1">
-            <ProgressBar current={progressCurrent} total={SECTION_LABELS.length} labels={SECTION_LABELS} />
+            <ProgressBar current={progressCurrent} total={sectionLabels.length} labels={sectionLabels} />
           </div>
         )}
       </header>
@@ -282,8 +300,8 @@ export default function App() {
               /* ── Loading screen ── */
               <div className="section-card text-center py-16">
                 <div className="text-4xl mb-4 animate-spin inline-block">⏳</div>
-                <p className="text-navy font-semibold text-sm">載入班別資料中…</p>
-                <p className="text-slate-400 text-xs mt-1">正在讀取 {adminValues.classIdOverride || student.classId} 的圖片題設定</p>
+                <p className="text-navy font-semibold text-sm">{t('loading.loadingClass')}</p>
+                <p className="text-slate-400 text-xs mt-1">{t('loading.loadingClassDetail', { classId: adminValues.classIdOverride || student.classId })}</p>
               </div>
             ) : (
               <>
@@ -299,10 +317,10 @@ export default function App() {
                   onClick={handleContinue}
                   className="btn-primary w-full mt-3"
                 >
-                  繼續填寫 ↓
+                  {t('adminFields.continue')}
                 </button>
                 {adminTouched && !adminReady && (
-                  <p className="text-center text-xs text-pink mt-2">請填妥所有標示 * 的必填欄位</p>
+                  <p className="text-center text-xs text-pink mt-2">{t('adminFields.requiredFieldsWarning')}</p>
                 )}
               </>
             )}
@@ -316,43 +334,49 @@ export default function App() {
             <div id="section-2">
               <div className="section-card">
                 <div className="section-title">
-                  <span className="badge bg-pink/10 text-pink">第一部分</span>
-                  幼兒在童亮館的體驗
+                  <span className="badge bg-pink/10 text-pink">{t('feelings.partBadge')}</span>
+                  {t('feelings.partTitle')}
                 </div>
                 <div className="space-y-4">
-                  {FEELINGS_QUESTIONS.map(q => (
-                    <div key={q.key} className="bg-white rounded-2xl border border-slate-200 shadow-md p-4 space-y-3">
-                      {q.type === 'checkbox' ? (
-                        <div>
-                          <p className="text-sm font-bold text-navy mb-3">{q.text} <span className="text-pink">*</span></p>
-                          <FollowUpCheckbox
-                            label=""
-                            options={q.checkboxOptions}
-                            values={feelingsValues[q.key] ? [feelingsValues[q.key]] : []}
-                            onChange={v => setFeelingsValues(p => ({ ...p, [q.key]: v[v.length - 1] ?? '' }))}
+                  {FEELINGS_QUESTIONS.map(q => {
+                    const mainText = t('feelings.' + q.key)
+                    const followUpLabel = t('feelings.' + q.followUpKey)
+                    const followUpOptions = t('feelings.' + q.followUpKey + 'Options')
+                    const obsLabel = t('feelings.' + q.observationKey)
+                    return (
+                      <div key={q.key} className="bg-white rounded-2xl border border-slate-200 shadow-md p-4 space-y-3">
+                        {q.type === 'checkbox' ? (
+                          <div>
+                            <p className="text-sm font-bold text-navy mb-3">{mainText} <span className="text-pink">*</span></p>
+                            <FollowUpCheckbox
+                              label=""
+                              options={t('feelings.' + q.key + 'Options')}
+                              values={feelingsValues[q.key] ? [feelingsValues[q.key]] : []}
+                              onChange={v => setFeelingsValues(p => ({ ...p, [q.key]: v[v.length - 1] ?? '' }))}
+                            />
+                          </div>
+                        ) : (
+                          <EmojiRating
+                            question={mainText}
+                            value={feelingsValues[q.key]}
+                            onChange={v => setFeelingsValues(p => ({ ...p, [q.key]: v }))}
+                            required
                           />
-                        </div>
-                      ) : (
-                        <EmojiRating
-                          question={q.text}
-                          value={feelingsValues[q.key]}
-                          onChange={v => setFeelingsValues(p => ({ ...p, [q.key]: v }))}
-                          required
+                        )}
+                        <FollowUpCheckbox
+                          label={followUpLabel}
+                          options={followUpOptions}
+                          values={feelingsValues[q.followUpKey] ?? []}
+                          onChange={v => setFeelingsValues(p => ({ ...p, [q.followUpKey]: v }))}
                         />
-                      )}
-                      <FollowUpCheckbox
-                        label={q.followUpLabel}
-                        options={q.followUpOptions}
-                        values={feelingsValues[q.followUpKey] ?? []}
-                        onChange={v => setFeelingsValues(p => ({ ...p, [q.followUpKey]: v }))}
-                      />
-                      <ObservationBox
-                        label={q.observationLabel}
-                        value={feelingsValues[q.observationKey]}
-                        onChange={v => setFeelingsValues(p => ({ ...p, [q.observationKey]: v }))}
-                      />
-                    </div>
-                  ))}
+                        <ObservationBox
+                          label={obsLabel}
+                          value={feelingsValues[q.observationKey]}
+                          onChange={v => setFeelingsValues(p => ({ ...p, [q.observationKey]: v }))}
+                        />
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             </div>
@@ -361,28 +385,28 @@ export default function App() {
             <div id="section-3">
               <div className="section-card">
                 <div className="section-title">
-                  <span className="badge bg-yellow/20 text-slate-700">第二部分</span>
-                  記憶回想測試
+                  <span className="badge bg-yellow/20 text-slate-700">{t('memory.partBadge')}</span>
+                  {t('memory.partTitle')}
                 </div>
                 <div className="space-y-5">
                   <div>
-                    <label className="form-label">{MEMORY_QUESTIONS.q7.text}</label>
+                    <label className="form-label">{t('memory.q7')}</label>
                     <input
                       type="text"
                       className="form-input"
                       value={memoryValues.q7 ?? ''}
                       onChange={e => setMemoryValues(p => ({ ...p, q7: e.target.value }))}
-                      placeholder="例：3次"
+                      placeholder={t('memory.q7Placeholder')}
                     />
                   </div>
                   <div>
-                    <label className="form-label">{MEMORY_QUESTIONS.q8.text}</label>
+                    <label className="form-label">{t('memory.q8')}</label>
                     <textarea
                       rows={4}
                       className="form-input resize-none"
                       value={memoryValues.q8 ?? ''}
                       onChange={e => setMemoryValues(p => ({ ...p, q8: e.target.value }))}
-                      placeholder="自由描述"
+                      placeholder={t('memory.q8Placeholder')}
                     />
                   </div>
                 </div>
@@ -393,13 +417,13 @@ export default function App() {
             <div id="section-4">
               <div className="section-card">
                 <div className="section-title">
-                  <span className="badge bg-green/10 text-green">第二部分（續）</span>
-                  記憶回想測試——圖片辨認
+                  <span className="badge bg-green/10 text-green">{t('images.partBadge')}</span>
+                  {t('images.partTitle')}
                 </div>
 
                 {config?.blocks?.length ? (
                   <>
-                    <p className="text-xs text-slate-400 mb-5">共 {config.blocks.length} 個主題</p>
+                    <p className="text-xs text-slate-400 mb-5">{t('images.totalTopics', { count: config.blocks.length })}</p>
                     <div className="space-y-4">
                       {config.blocks.map(block => (
                         <div key={block.index} className="bg-white rounded-2xl border border-slate-200 shadow-md p-4">
@@ -407,13 +431,17 @@ export default function App() {
                             <span className="w-7 h-7 rounded-full bg-navy text-white text-sm flex items-center justify-center font-bold shrink-0">
                               {block.index}
                             </span>
-                            <span className="text-sm font-bold text-navy">主題 {block.index}</span>
+                            <span className="text-sm font-bold text-navy">{t('images.topicLabel', { index: block.index })}</span>
                           </div>
                           <ImageBlock
                             block={block}
                             values={imageValues[block.index] ?? {}}
                             onChange={(k, v) => setImageBlockValue(block.index, k, v)}
                             showBatch4={student?.district === 'Tuen Mun'}
+                            t={t}
+                            batch1FollowUpOptions={t('images.batch1FollowUpOptions')}
+                            batch2FollowUpOptions={t('images.batch2FollowUpOptions')}
+                            batch4FollowUpOptions={t('images.batch4FollowUpOptions')}
                           />
                         </div>
                       ))}
@@ -421,24 +449,24 @@ export default function App() {
                   </>
                 ) : (
                   <p className="text-sm text-slate-400 py-4">
-                    班別設定未完成，圖片題暫不顯示。
+                    {t('images.configIncomplete')}
                   </p>
                 )}
 
                 {/* Closing questions */}
                 <div className="mt-8 pt-6 border-t border-slate-100">
                   <div className="section-title">
-                    <span className="badge bg-navy/10 text-navy">第三部分</span>
-                    對童亮館未來的想法
+                    <span className="badge bg-navy/10 text-navy">{t('closing.partBadge')}</span>
+                    {t('closing.partTitle')}
                   </div>
                   <FollowUpCheckbox
-                    label="請向幼兒提問以下問題"
-                    options={CLOSING_QUESTIONS}
+                    label={t('closing.intro')}
+                    options={CLOSING_QUESTION_KEYS.map(k => t('closing.' + k))}
                     values={closingValues.asked}
                     onChange={v => setClosingValues(p => ({ ...p, asked: v }))}
                   />
                   <ObservationBox
-                    label="Q12b. 觀察／補充記錄"
+                    label={t('closing.observationLabel')}
                     value={closingValues.observation}
                     onChange={v => setClosingValues(p => ({ ...p, observation: v }))}
                   />
@@ -449,7 +477,7 @@ export default function App() {
               <div className="mt-4">
                 {submitState === 'error' && (
                   <div className="mb-4 p-4 rounded-xl bg-pink/10 border border-pink/20 text-sm text-pink whitespace-pre-wrap">
-                    ⚠️ 提交時發生錯誤：{'\n'}{submitError}
+                    {t('submit.errorPrefix')}{'\n'}{submitError}
                   </div>
                 )}
                 <button
@@ -457,7 +485,7 @@ export default function App() {
                   disabled={submitState === 'loading'}
                   className="btn-primary w-full text-base py-4 disabled:opacity-50"
                 >
-                  {submitState === 'loading' ? '提交中…' : '提交記錄'}
+                  {submitState === 'loading' ? t('submit.submitting') : t('submit.submit')}
                 </button>
               </div>
             </div>
@@ -468,9 +496,9 @@ export default function App() {
         {section === DONE && (
           <div className="section-card text-center py-12">
             <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-xl font-bold text-navy mb-2">提交成功！</h2>
+            <h2 className="text-xl font-bold text-navy mb-2">{t('done.title')}</h2>
             <p className="text-slate-500 text-sm mb-6">
-              {student?.studentId} 的記錄已儲存。
+              {t('done.message', { studentId: student?.studentId })}
             </p>
             <button
               onClick={() => {
@@ -482,7 +510,7 @@ export default function App() {
               }}
               className="btn-secondary"
             >
-              開始下一位學生
+              {t('done.nextStudent')}
             </button>
           </div>
         )}

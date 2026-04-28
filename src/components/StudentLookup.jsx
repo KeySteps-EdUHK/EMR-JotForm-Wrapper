@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useStudentLookup } from '../hooks/useStudentLookup'
 import { useClassConfig } from '../hooks/useClassConfig'
+import { useLanguage } from '../i18n/LanguageContext'
 
 export default function StudentLookup({ onResolved }) {
   const [input, setInput]           = useState('')
@@ -10,6 +11,7 @@ export default function StudentLookup({ onResolved }) {
 
   const { lookup, loading: lookupLoading, error: lookupError, getSchoolClasses } = useStudentLookup()
   const { getConfig, loading: configLoading }                  = useClassConfig()
+  const { t } = useLanguage()
 
   const loading = lookupLoading || configLoading
 
@@ -39,18 +41,18 @@ export default function StudentLookup({ onResolved }) {
   return (
     <div className="section-card">
       <div className="section-title">
-        <span className="w-7 h-7 rounded-full bg-navy text-white text-sm flex items-center justify-center font-bold shrink-0">1</span>
-        學生資料
+        <span className="w-7 h-7 rounded-full bg-navy text-white text-sm flex items-center justify-center font-bold shrink-0">{t('studentLookup.sectionNumber')}</span>
+        {t('studentLookup.sectionTitle')}
       </div>
 
-      <label className="form-label">學生編號</label>
+      <label className="form-label">{t('studentLookup.studentIdLabel')}</label>
       <div className="flex gap-2">
         <input
           type="text"
           value={input}
           onChange={e => setInput(e.target.value.trim())}
           onKeyDown={e => e.key === 'Enter' && !loading && input && handleLookup()}
-          placeholder="例：St10001"
+          placeholder={t('studentLookup.studentIdPlaceholder')}
           className="form-input flex-1"
           autoCapitalize="off"
           autoCorrect="off"
@@ -61,28 +63,28 @@ export default function StudentLookup({ onResolved }) {
           disabled={loading || !input}
           className="btn-primary min-w-[80px] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? '⏳' : '查詢'}
+          {loading ? '⏳' : t('studentLookup.lookup')}
         </button>
       </div>
 
       {lookupError && (
         <p className="mt-2 text-sm text-pink font-medium flex items-center gap-1">
-          <span>⚠️</span> {lookupError}
+          <span>⚠️</span> {t('studentLookup.errorNotFound')}
         </p>
       )}
 
       {foundStudent && (
         <div className="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
           <div className="flex flex-wrap gap-2 mb-4">
-            <InfoChip label="學生" value={foundStudent.studentName} color="navy" />
-            <InfoChip label="學校" value={foundStudent.schoolName}  color="orange" />
-            <InfoChip label="班別" value={foundStudent.className ? `${foundStudent.className} (${foundStudent.classId})` : foundStudent.classId} color="yellow" />
-            <InfoChip label="地區" value={foundStudent.district}    color="green" />
+            <InfoChip label={t('studentLookup.chipStudent')} value={foundStudent.studentName} color="navy" />
+            <InfoChip label={t('studentLookup.chipSchool')} value={foundStudent.schoolName}  color="orange" />
+            <InfoChip label={t('studentLookup.chipClass')} value={foundStudent.className ? `${foundStudent.className} (${foundStudent.classId})` : foundStudent.classId} color="yellow" />
+            <InfoChip label={t('studentLookup.chipDistrict')} value={foundStudent.district}    color="green" />
           </div>
 
           {configMissing && (
             <p className="text-xs text-pink mb-3 flex items-center gap-1">
-              ⚠️ 找不到 {foundStudent.classId} 的班別設定，圖片題將暫時顯示為空白。
+              ⚠️ {t('studentLookup.configMissing', { classId: foundStudent.classId })}
             </p>
           )}
 
@@ -90,7 +92,7 @@ export default function StudentLookup({ onResolved }) {
             onClick={handleConfirm}
             className="btn-primary w-full"
           >
-            確認學生，開始訪問 →
+            {t('studentLookup.confirm')}
           </button>
         </div>
       )}

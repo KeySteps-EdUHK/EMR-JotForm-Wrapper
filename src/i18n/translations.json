@@ -1,0 +1,296 @@
+{
+  "zh": {
+    "app": {
+      "title": "聽孩子說「童亮館」故事：幼兒活動回憶與學習發展探究 {phase}",
+      "subtitle": "Event-Based Memory Test"
+    },
+    "phases": {
+      "Trial": "試驗",
+      "Pilot": "先導",
+      "Round I": "第一輪",
+      "Round II": "第二輪"
+    },
+    "studentLookup": {
+      "sectionNumber": "1",
+      "sectionTitle": "學生資料",
+      "studentIdLabel": "學生編號",
+      "studentIdPlaceholder": "例：St10001",
+      "lookup": "查詢",
+      "lookupLoading": "查詢中…",
+      "confirm": "確認學生，開始訪問 →",
+      "errorNotFound": "找不到該學生編號，請確認後重新輸入。",
+      "configMissing": "找不到 {classId} 的班別設定，圖片題將暫時顯示為空白。",
+      "chipStudent": "學生",
+      "chipSchool": "學校",
+      "chipClass": "班別",
+      "chipDistrict": "地區"
+    },
+    "adminFields": {
+      "sectionNumber": "2",
+      "sectionTitle": "基本資料",
+      "chipStudent": "學生",
+      "chipSchool": "學校",
+      "chipDistrict": "地區",
+      "classLabel": "班別",
+      "classLabelRequired": "班別 *",
+      "classOptionsCount": "（{count} 個班別）",
+      "interviewerNameLabel": "訪問老師姓名 *",
+      "interviewerNamePlaceholder": "請輸入姓名",
+      "interviewDateLabel": "訪問日期 *",
+      "phaseLabel": "計劃階段 *",
+      "phaseOptionDefault": "請選擇",
+      "studentNameLabel": "學生姓名",
+      "studentNameModifier": "（可修改）",
+      "studentNamePlaceholder": "自動填入",
+      "continue": "繼續填寫 ↓",
+      "requiredFieldsWarning": "請填妥所有標示 * 的必填欄位"
+    },
+    "feelings": {
+      "partBadge": "第一部分",
+      "partTitle": "幼兒在童亮館的體驗",
+      "intro": "請幼兒選擇最符合感受的表情：😭 = 好唔開心；🙁 = 唔開心；😐 = 唔清楚／唔肯定；🙂 = 開心；😀 = 好開心",
+      "q1a": "Q1a. 你嚟到童亮館嗰陣覺得點呀？",
+      "q1b": "Q1b. 跟進問題",
+      "q1bOptions": ["係乜嘢令到你開心/唔開心？（根據幼兒上一題的回答提問）"],
+      "q1c": "Q1c. 觀察／補充記錄",
+      "q2a": "Q2a. 你鍾唔鍾意喺童亮館同同學仔一齊玩？",
+      "q2b": "Q2b. 跟進問題（請按次序提問以下兩條問題）",
+      "q2bOptions": ["同朋友喺呢度玩嘅時候，邊樣嘢最好玩？", "你仲想喺呢度同朋友玩啲咩新遊戲？"],
+      "q2c": "Q2c. 觀察／補充記錄",
+      "q3a": "Q3a. 你鍾唔鍾意童亮館入面啲玩具同設施？",
+      "q3b": "Q3b. 跟進問題（請按次序提問以下兩條問題）",
+      "q3bOptions": ["點解你鐘意/唔鍾意玩嗰個玩具/設施？", "你希望童亮館有啲咩玩？"],
+      "q3c": "Q3c. 觀察／補充記錄",
+      "q4a": "Q4a. 你鍾唔鍾意參加童亮館嘅活動？",
+      "q4b": "Q4b. 跟進問題（請按次序提問以下兩條問題）",
+      "q4bOptions": ["點解你鐘意/唔鍾意嗰啲活動？", "你覺得最好玩嘅活動係咩？"],
+      "q4c": "Q4c. 觀察／補充記錄",
+      "q5a": "Q5a. 童亮館令你覺得安全嗎？",
+      "q5aOptions": ["安全", "不安全"],
+      "q5b": "Q5b. 跟進問題",
+      "q5bOptions": ["（若幼兒回答不安全）點解令你覺得唔安全？", "（若幼兒回答安全）有冇啲乜嘢令你感到安全？"],
+      "q5c": "Q5c. 觀察／補充記錄",
+      "q6a": "Q6a. 童亮館嘅姑娘/老師有冇喺你需要幫手嘅時候幫你？",
+      "q6aOptions": ["有", "沒有"],
+      "q6b": "Q6b. 跟進問題（請按次序提問以下兩條問題）",
+      "q6bOptions": ["（若幼兒回答係否定）係發生乜嘢事？/你嗰陣需要乜嘢幫助？", "（若幼兒回答係肯定）佢哋係點樣幫助你架？"],
+      "q6c": "Q6c. 觀察／補充記錄"
+    },
+    "memory": {
+      "partBadge": "第二部分",
+      "partTitle": "記憶回想測試",
+      "q7": "Q7. 你記唔記得自己K2嚟過童亮館幾多次？",
+      "q7Placeholder": "例：3次",
+      "q8": "Q8. 你記得自己喺度做過啲咩？（如有任何觀察請記錄）",
+      "q8Placeholder": "自由描述"
+    },
+    "images": {
+      "partBadge": "第二部分（續）",
+      "partTitle": "記憶回想測試——圖片辨認",
+      "topicLabel": "主題 {index}",
+      "totalTopics": "共 {count} 個主題",
+      "configIncomplete": "班別設定未完成，圖片題暫不顯示。",
+      "aiNote": "註：本問卷中部分圖片由AI生成，僅用於研究用途。",
+      "batch1Question": "Q{index}.1a. 你記唔記得以下邊個場景係你喺童亮館玩過嘅？",
+      "batch1FollowUp": "Q{index}.1b. 跟進問題",
+      "batch1FollowUpOptions": ["可唔可以講下你喺呢個場景度做過啲咩？"],
+      "batch1Obs": "Q{index}.1c. 觀察／補充記錄",
+      "batch2Question": "Q{index}.2a. 你記唔記得嗰次同邊個姑娘/老師一齊玩？",
+      "batch2FollowUp": "Q{index}.2b. 跟進問題（請按次序提問以下兩條問題）",
+      "batch2FollowUpOptions": ["你記得你哋一起做咗啲咩嗎？", "嗰陣你覺得點呀？"],
+      "batch2Obs": "Q{index}.2c. 觀察／補充記錄",
+      "batch3Question": "Q{index}.3a. 你記唔記得你玩過以下邊啲材料？",
+      "batch3Obs": "Q{index}.3b. 觀察／補充記錄",
+      "batch4Question": "Q{index}.4a. 你記唔記得你玩過以下邊啲材料？",
+      "batch4FollowUp": "Q{index}.4b. 跟進問題",
+      "batch4FollowUpOptions": ["可唔可以講下你喺呢個場景度做過啲咩？"],
+      "batch4Obs": "Q{index}.4c. 觀察／補充記錄"
+    },
+    "closing": {
+      "partBadge": "第三部分",
+      "partTitle": "對童亮館未來的想法",
+      "intro": "請向幼兒提問以下全部問題，幼兒可以講出嚟或者畫出嚟",
+      "q1": "你仲想唔想再嚟童亮館？",
+      "q2": "點解你想／唔想再嚟？",
+      "q3": "下次嚟想做啲咩？",
+      "q4": "如果可以改一樣童亮館入面嘅嘢，你會改邊樣？",
+      "q5": "仲有冇啲乜嘢想同我哋分享？",
+      "observationLabel": "Q11b. 觀察／補充記錄"
+    },
+    "submit": {
+      "submitting": "提交中…",
+      "submit": "提交記錄",
+      "errorPrefix": "⚠️ 提交時發生錯誤："
+    },
+    "done": {
+      "title": "提交成功！",
+      "message": "{studentId} 的記錄已儲存。",
+      "nextStudent": "開始下一位學生"
+    },
+    "loading": {
+      "loadingClass": "載入班別資料中…",
+      "loadingClassDetail": "正在讀取 {classId} 的圖片題設定"
+    },
+    "emojiRating": {
+      "labels": ["好唔開心", "唔開心", "唔清楚／唔肯定", "開心", "好開心"]
+    },
+    "langToggle": {
+      "zhLabel": "中文",
+      "title": "切換語言"
+    },
+    "imagePicker": {
+      "imageLabelDefault": "圖片",
+      "naLabel": "唔知道 / N/A"
+    },
+    "observationBox": {
+      "defaultPlaceholder": "觀察／補充記錄（選填）"
+    }
+  },
+  "en": {
+    "app": {
+      "title": "Event-Based Recall Memory and Learning Outcomes in Early Childhood Education: A Study of Children's Experiences at KeySteps' Hubs {phase}",
+      "subtitle": "Event-Based Memory Test"
+    },
+    "phases": {
+      "Trial": "Trial",
+      "Pilot": "Pilot",
+      "Round I": "Round I",
+      "Round II": "Round II"
+    },
+    "studentLookup": {
+      "sectionNumber": "1",
+      "sectionTitle": "Student Information",
+      "studentIdLabel": "Student ID",
+      "studentIdPlaceholder": "e.g. St10000",
+      "lookup": "Lookup",
+      "lookupLoading": "Looking up…",
+      "confirm": "Confirm & Start Interview →",
+      "errorNotFound": "Student ID not found. Please verify and try again.",
+      "configMissing": "Class config for {classId} not found. Image questions will appear blank.",
+      "chipStudent": "Student",
+      "chipSchool": "School",
+      "chipClass": "Class",
+      "chipDistrict": "District"
+    },
+    "adminFields": {
+      "sectionNumber": "2",
+      "sectionTitle": "Interview Information",
+      "chipStudent": "Student",
+      "chipSchool": "School",
+      "chipDistrict": "District",
+      "classLabel": "Class",
+      "classLabelRequired": "Class *",
+      "classOptionsCount": "（{count} classes）",
+      "interviewerNameLabel": "Interviewer's Name *",
+      "interviewerNamePlaceholder": "Enter name",
+      "interviewDateLabel": "Date *",
+      "phaseLabel": "Phase *",
+      "phaseOptionDefault": "Please Select",
+      "studentNameLabel": "Student Name",
+      "studentNameModifier": "（editable）",
+      "studentNamePlaceholder": "Auto-filled",
+      "continue": "Continue ↓",
+      "requiredFieldsWarning": "Please complete all required fields marked *"
+    },
+    "feelings": {
+      "partBadge": "Part I",
+      "partTitle": "Individual Child's Hub Experience",
+      "intro": "For each question, present a horizontal row of FIVE smiley faces:   😭 = Very unhappy   🙁 = Not happy   😐 = Not sure   🙂 = Happy   😀 = Very happy",
+      "q1a": "Q1a. How did you feel when you came to the hub?",
+      "q1b": "Q1b. Follow-up Questions:",
+      "q1bOptions": ["What made you happy or sad?"],
+      "q1c": "Q1c. Observation / Notes",
+      "q2a": "Q2a. Did you like playing with your classmates at the hub?",
+      "q2b": "Q2b. Follow-up Questions:",
+      "q2bOptions": ["What was the most fun thing you played with your friends?", "What new game would you like to play with your friends here?"],
+      "q2c": "Q2c. Observation / Notes",
+      "q3a": "Q3a. Did you like the toys or materials in the hub?",
+      "q3b": "Q3b. Follow-up Questions:",
+      "q3bOptions": ["Why did you like or dislike that toy or material to play with?", "What toy do you wish we had at the hub?"],
+      "q3c": "Q3c. Observation / Notes",
+      "q4a": "Q4a. Did you like the activities you did at the hub?",
+      "q4b": "Q4b. Follow-up Questions:",
+      "q4bOptions": ["Why did you like or dislike those activities?", "What was the most fun thing you did?"],
+      "q4c": "Q4c. Observation / Notes",
+      "q5a": "Q5a. Did you feel safe at the hub?",
+      "q5aOptions": ["Yes", "No"],
+      "q5b": "Q5b. Follow-up Questions:",
+      "q5bOptions": ["If no, why did you not feel safe?", "If yes, what made you feel safe?"],
+      "q5c": "Q5c. Observation / Notes",
+      "q6a": "Q6a. Did hub staff help you when you needed something?",
+      "q6aOptions": ["Yes", "No"],
+      "q6b": "Q6b. Follow-up Questions:",
+      "q6bOptions": ["If no, what happened / did you need?", "If yes, how did they help you?"],
+      "q6c": "Q6c. Observation / Notes"
+    },
+    "memory": {
+      "partBadge": "Part II",
+      "partTitle": "Recall Memory Test",
+      "q7": "Q7. Do you remember how many times you have come to play at the hub?",
+      "q7Placeholder": "e.g. 3 times",
+      "q8": "Q8. What do you remember doing? (please also note any observations)",
+      "q8Placeholder": "Free description"
+    },
+    "images": {
+      "partBadge": "Part II",
+      "partTitle": "Recall Memory Test - Theme {index}",
+      "topicLabel": "Theme {index}",
+      "totalTopics": "{count} topics total",
+      "configIncomplete": "Class configuration incomplete. Image questions not available.",
+      "aiNote": "Note: Some of the images used in this questionnaire were generated by AI for research purposes.",
+      "batch1Question": "Q{index}.1a. Do you remember which of the following scenes you played in at hub?",
+      "batch1FollowUp": "Q{index}.1b. Follow-up Questions:",
+      "batch1FollowUpOptions": ["Can you remember what you did here? (tell us)"],
+      "batch1Obs": "Q{index}.1c. Observation / Notes",
+      "batch2Question": "Q{index}.2a. Do you remember who you played with at this session?",
+      "batch2FollowUp": "Q{index}.2b. Follow-up Questions:",
+      "batch2FollowUpOptions": ["Do you remember what you did together? (tell us)", "How did that make you feel?"],
+      "batch2Obs": "Q{index}.2c. Observation / Notes",
+      "batch3Question": "Q{index}.3a. Do you remember where did you play at this session?",
+      "batch3Obs": "Q{index}.3b. Observation / Notes",
+      "batch4Question": "Q{index}.4a. Do you remember which of the following scenes you played in at hub?",
+      "batch4FollowUp": "Q{index}.4b. Follow-up Questions:",
+      "batch4FollowUpOptions": ["Do you remember what you did here? (tell us)"],
+      "batch4Obs": "Q{index}.4c. Observation / Notes"
+    },
+    "closing": {
+      "partBadge": "Part III",
+      "partTitle": "Change and Future Intent",
+      "intro": "Please ask the child the following questions (child may answer verbally or draw)",
+      "q1": "Would you like to come back to the hub again?",
+      "q2": "Why do you want / not want to come back? (Draw or tell us)",
+      "q3": "What do you want to do next time? (Draw or tell us)",
+      "q4": "If you could change one thing about our hub, what would it be? (Draw or say)",
+      "q5": "Is there anything else you would like to share? (Draw or tell us)",
+      "observationLabel": "Q11b. Observation / Notes"
+    },
+    "submit": {
+      "submitting": "Submitting…",
+      "submit": "Submit Record",
+      "errorPrefix": "⚠️ Submission error:"
+    },
+    "done": {
+      "title": "Submitted Successfully!",
+      "message": "Record for {studentId} has been saved.",
+      "nextStudent": "Start Next Student"
+    },
+    "loading": {
+      "loadingClass": "Loading class data…",
+      "loadingClassDetail": "Reading image config for {classId}"
+    },
+    "emojiRating": {
+      "labels": ["Very unhappy", "Not happy", "Not sure", "Happy", "Very happy"]
+    },
+    "langToggle": {
+      "zhLabel": "中文",
+      "title": "Switch language"
+    },
+    "imagePicker": {
+      "imageLabelDefault": "Image",
+      "naLabel": "I don't know / N/A"
+    },
+    "observationBox": {
+      "defaultPlaceholder": "Observation / Notes (optional)"
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useLanguage } from '../i18n/LanguageContext'
 
 /** Extensions tried in order before giving up and showing a placeholder */
 const EXTENSIONS = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp']
@@ -26,12 +27,13 @@ const SLOT_COLORS = [
  * the src is missing / fails to load.
  */
 function Tile({ img, index, isSelected, onClick }) {
+  const { t } = useLanguage()
   // extIdx: which extension we're currently trying (-1 = use src as-is / already has ext)
   const [extIdx, setExtIdx] = useState(0)
   const [allBroken, setAllBroken] = useState(false)
 
   const slot = SLOT_COLORS[index % 4]
-  const label = img.src ? img.src.split('/').pop() : '圖片'
+  const label = img.src ? img.src.split('/').pop() : t('imagePicker.imageLabelDefault')
 
   // Build the URL to actually request: append the current candidate extension
   const resolvedSrc = img.src ? `${img.src}.${EXTENSIONS[extIdx]}` : null
@@ -102,8 +104,10 @@ function Tile({ img, index, isSelected, onClick }) {
  *   selected string|null        — currently selected src
  *   onSelect (src, isCorrect) => void
  *   question string             — question text shown above the grid
+ *   t      translation function
  */
 export default function ImagePicker({ images, selected, onSelect, question }) {
+  const { t } = useLanguage()
   const shuffled = useMemo(() => shuffle(images), [images])
 
   return (
@@ -134,7 +138,7 @@ export default function ImagePicker({ images, selected, onSelect, question }) {
             ? 'border-orange text-orange bg-orange/5 shadow shadow-orange/20'
             : 'border-slate-200 text-slate-400 hover:border-orange/30 hover:text-slate-500'}`}
       >
-        唔知道 / N/A
+        {t('imagePicker.naLabel')}
       </button>
     </div>
   )

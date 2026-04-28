@@ -1,16 +1,10 @@
 import ImagePicker from './ImagePicker'
 import FollowUpCheckbox from './FollowUpCheckbox'
 import ObservationBox from './ObservationBox'
-import { IMAGE_BATCH_FOLLOWUP_OPTIONS } from '../constants/questions'
 
 /**
  * One image memory block — 4 batches of 2×2 image pickers, each with its own
  * follow-up checkbox (batch1+batch2) and observation textarea (all 4 batches).
- *
- *   batch1 (a–d): scene     — correct=a | follow-up Q{n}.1b | obs Q{n}.1c
- *   batch2 (e–h): staff     — correct=e | follow-up Q{n}.2b | obs Q{n}.2c
- *   batch3 (i–l): set 3     — correct=i |                   | obs Q{n}.3b
- *   batch4 (m–p): set 4     — correct=m |                   | obs Q{n}.4b
  *
  * Props:
  *   block    { index, batch1, batch2, batch3, batch4 }  each [{src,isCorrect}×4]
@@ -24,8 +18,18 @@ import { IMAGE_BATCH_FOLLOWUP_OPTIONS } from '../constants/questions'
  *     b3Obs, b4Obs,
  *   }
  *   onChange (key, value) => void
+ *   showBatch4 bool
+ *   t        translation function
+ *   batch1FollowUpOptions string[]
+ *   batch2FollowUpOptions string[]
+ *   batch4FollowUpOptions string[]
  */
-export default function ImageBlock({ block, values = {}, onChange, showBatch4 = true }) {
+export default function ImageBlock({
+  block, values = {}, onChange, showBatch4 = true, t,
+  batch1FollowUpOptions = [],
+  batch2FollowUpOptions = [],
+  batch4FollowUpOptions = [],
+}) {
   const n = block.index
 
   return (
@@ -39,16 +43,16 @@ export default function ImageBlock({ block, values = {}, onChange, showBatch4 = 
           onChange('batch1Selected', src)
           onChange('batch1Correct', isCorrect)
         }}
-        question={`Q${n}.1  你記唔記得以下邊個場景係你喺童亮館玩過嘅？`}
+        question={t('images.batch1Question', { index: n })}
       />
       <FollowUpCheckbox
-        label={`Q${n}.1b. 跟進問題`}
-        options={IMAGE_BATCH_FOLLOWUP_OPTIONS.batch1}
+        label={t('images.batch1FollowUp', { index: n })}
+        options={batch1FollowUpOptions}
         values={values.b1FollowUp ?? []}
         onChange={v => onChange('b1FollowUp', v)}
       />
       <ObservationBox
-        label={`Q${n}.1c. 觀察／補充記錄`}
+        label={t('images.batch1Obs', { index: n })}
         value={values.b1Obs}
         onChange={v => onChange('b1Obs', v)}
       />
@@ -61,16 +65,16 @@ export default function ImageBlock({ block, values = {}, onChange, showBatch4 = 
           onChange('batch2Selected', src)
           onChange('batch2Correct', isCorrect)
         }}
-        question={`Q${n}.2  你記唔記得嗰次同邊個姑娘/老師一齊玩？`}
+        question={t('images.batch2Question', { index: n })}
       />
       <FollowUpCheckbox
-        label={`Q${n}.2b. 跟進問題（請按次序提問以下兩條問題）`}
-        options={IMAGE_BATCH_FOLLOWUP_OPTIONS.batch2}
+        label={t('images.batch2FollowUp', { index: n })}
+        options={batch2FollowUpOptions}
         values={values.b2FollowUp ?? []}
         onChange={v => onChange('b2FollowUp', v)}
       />
       <ObservationBox
-        label={`Q${n}.2c. 觀察／補充記錄`}
+        label={t('images.batch2Obs', { index: n })}
         value={values.b2Obs}
         onChange={v => onChange('b2Obs', v)}
       />
@@ -83,10 +87,10 @@ export default function ImageBlock({ block, values = {}, onChange, showBatch4 = 
           onChange('batch3Selected', src)
           onChange('batch3Correct', isCorrect)
         }}
-        question={`Q${n}.3  你記唔記得以下邊個係你喺童亮館見過嘅？`}
+        question={t('images.batch3Question', { index: n })}
       />
       <ObservationBox
-        label={`Q${n}.3b. 觀察／補充記錄`}
+        label={t('images.batch3Obs', { index: n })}
         value={values.b3Obs}
         onChange={v => onChange('b3Obs', v)}
       />
@@ -101,10 +105,16 @@ export default function ImageBlock({ block, values = {}, onChange, showBatch4 = 
               onChange('batch4Selected', src)
               onChange('batch4Correct', isCorrect)
             }}
-            question={`Q${n}.4  你記唔記得以下邊個係你喺童亮館有關聯嘅？`}
+            question={t('images.batch4Question', { index: n })}
+          />
+          <FollowUpCheckbox
+            label={t('images.batch4FollowUp', { index: n })}
+            options={batch4FollowUpOptions}
+            values={values.b4FollowUp ?? []}
+            onChange={v => onChange('b4FollowUp', v)}
           />
           <ObservationBox
-            label={`Q${n}.4b. 觀察／補充記錄`}
+            label={t('images.batch4Obs', { index: n })}
             value={values.b4Obs}
             onChange={v => onChange('b4Obs', v)}
           />
@@ -114,4 +124,3 @@ export default function ImageBlock({ block, values = {}, onChange, showBatch4 = 
     </div>
   )
 }
-
