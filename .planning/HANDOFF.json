@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-05-15T02:14:41.588Z",
+  "source": "auto-postool",
+  "partial": false,
+  "phase": null,
+  "phase_name": null,
+  "phase_dir": null,
+  "plan": null,
+  "task": null,
+  "total_tasks": null,
+  "status": "auto-checkpoint",
+  "completed_tasks": [],
+  "remaining_tasks": [],
+  "blockers": [],
+  "human_actions_pending": [],
+  "decisions": [],
+  "uncommitted_files": [
+    {
+      "status": "??",
+      "path": ".planning/"
+    }
+  ],
+  "next_action": null,
+  "context_notes": "Recent commits:\n2ad56e3 commit\n45a21df commit\nfcf04fb commit\n5858228 feat: complete i18n refactor — single translations.json, LanguageProvider, all components migrated\nec10454 Updated image"
+}
